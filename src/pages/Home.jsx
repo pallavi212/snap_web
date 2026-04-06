@@ -304,6 +304,7 @@ const Home = () => {
                     >
                         <Link
                             to="/contact"
+                            id="getTouchBtn"
                             className="inline-flex items-center px-8 py-4 bg-gradient-to-b from-blue-500 to-blue-700 text-white rounded-full font-semibold text-[15px] transition-all hover:from-blue-400 hover:to-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-blue-400/30"
                         >
                             Get in Touch Today
@@ -331,7 +332,7 @@ const Home = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.98 }}
                             transition={{ duration: 0.25, ease: "easeOut" }}
-                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-hidden"
+                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-y-auto max-h-[90vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button
@@ -343,7 +344,7 @@ const Home = () => {
                                 <X className="h-5 w-5 text-white" />
                             </button>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
                                 <div className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/10">
                                     <div className="rounded-2xl overflow-hidden border border-white/15 bg-black/20 shadow-[0_16px_45px_rgba(0,0,0,0.35)]">
                                         <img

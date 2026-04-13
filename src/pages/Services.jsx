@@ -264,17 +264,20 @@ const Services = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.98 }}
                             transition={{ duration: 0.25, ease: "easeOut" }}
-                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-hidden"
+                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-y-auto max-h-[92vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <button
-                                type="button"
-                                onClick={() => setActiveProductId(null)}
-                                className="absolute top-4 right-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/60"
-                                aria-label="Close"
-                            >
-                                <X className="h-5 w-5 text-white" />
-                            </button>
+                            {/* Sticky close bar */}
+                            <div className="sticky top-0 z-20 flex justify-end px-4 pt-4 pb-2 bg-gray-950/80 backdrop-blur-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveProductId(null)}
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 transition-colors focus:outline-none"
+                                    aria-label="Close"
+                                >
+                                    <X className="h-4 w-4 text-white" />
+                                </button>
+                            </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2">
                                 <div className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/10">
@@ -282,12 +285,12 @@ const Services = () => {
                                         <img
                                             src={activeProduct.images[activeProductImageIdx] ?? activeProduct.coverImage}
                                             alt={activeProduct.title}
-                                            className="w-full h-[240px] sm:h-[320px] object-contain bg-black/20"
+                                            className="w-full h-[200px] sm:h-[280px] object-contain bg-black/20"
                                         />
                                     </div>
 
                                     {activeProduct.images.length > 1 && (
-                                        <div className="mt-4 grid grid-cols-3 gap-3">
+                                        <div className="mt-4 grid grid-cols-3 gap-2">
                                             {activeProduct.images.slice(0, 6).map((url, i) => (
                                                 <button
                                                     key={url}
@@ -296,14 +299,14 @@ const Services = () => {
                                                     className={`rounded-xl overflow-hidden border ${i === activeProductImageIdx ? 'border-primary-300/60 ring-2 ring-primary-400/30' : 'border-white/10 hover:border-white/20'} bg-black/20 transition-colors`}
                                                     aria-label={`View screenshot ${i + 1}`}
                                                 >
-                                                    <img src={url} alt="" className="w-full h-20 object-cover" loading="lazy" />
+                                                    <img src={url} alt="" className="w-full h-16 sm:h-20 object-cover" loading="lazy" />
                                                 </button>
                                             ))}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="p-7 sm:p-9">
+                                <div className="p-6 sm:p-8">
                                     <div className="flex items-center gap-3">
                                         <div className="h-11 w-11 rounded-2xl bg-primary-500/20 border border-primary-400/30 flex items-center justify-center">
                                             {React.createElement(activeProduct.icon, { className: "h-6 w-6 text-primary-200" })}
@@ -313,10 +316,10 @@ const Services = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                                    <h3 className="mt-4 text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                                         {activeProduct.title}
                                     </h3>
-                                    <p className="mt-3 text-sm sm:text-base text-primary-100/80 leading-relaxed">
+                                    <p className="mt-3 text-sm text-primary-100/80 leading-relaxed">
                                         {activeProduct.description}
                                     </p>
 
@@ -338,7 +341,7 @@ const Services = () => {
                                                 href={activeProduct.liveLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center justify-center px-6 py-3 rounded-md bg-gradient-to-b from-primary-500 to-primary-700 text-white text-sm font-semibold shadow-lg hover:from-primary-400 hover:to-primary-600 transition-colors border border-primary-400/30"
+                                                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-b from-primary-500 to-primary-700 text-white text-sm font-semibold shadow-lg hover:from-primary-400 hover:to-primary-600 transition-colors border border-primary-400/30"
                                             >
                                                 Visit Site
                                                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -346,7 +349,7 @@ const Services = () => {
                                         ) : (
                                             <Link
                                                 to="/contact"
-                                                className="inline-flex items-center justify-center px-6 py-3 rounded-md bg-gradient-to-b from-primary-500 to-primary-700 text-white text-sm font-semibold shadow-lg hover:from-primary-400 hover:to-primary-600 transition-colors border border-primary-400/30"
+                                                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-b from-primary-500 to-primary-700 text-white text-sm font-semibold shadow-lg hover:from-primary-400 hover:to-primary-600 transition-colors border border-primary-400/30"
                                             >
                                                 Get Started
                                                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -355,7 +358,7 @@ const Services = () => {
                                         <button
                                             type="button"
                                             onClick={() => setActiveProductId(null)}
-                                            className="inline-flex items-center justify-center px-6 py-3 rounded-md bg-white/10 text-white text-sm font-semibold border border-white/15 hover:bg-white/15 transition-colors"
+                                            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white/10 text-white text-sm font-semibold border border-white/15 hover:bg-white/15 transition-colors"
                                         >
                                             Close
                                         </button>
@@ -400,11 +403,11 @@ const Services = () => {
                                         }}
                                         className={`rounded-2xl border border-white/15 bg-white/5 backdrop-blur-xl p-5 sm:p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)] hover:shadow-[0_18px_55px_rgba(0,0,0,0.45)] transition-shadow text-center ${isInteractive ? 'hover:bg-white/10 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/60 focus-visible:ring-offset-0' : ''}`}
                                     >
-                                            <div className="mx-auto h-12 w-12 rounded-2xl bg-primary-500/20 border border-primary-400/30 flex items-center justify-center">
-                                                <Icon className="h-6 w-6 text-primary-200" />
-                                            </div>
-                                            <div className="mt-4 text-sm font-semibold text-white">{s.title}</div>
-                                            <div className="mt-1 text-xs text-primary-100/70">{s.subtitle}</div>
+                                        <div className="mx-auto h-12 w-12 rounded-2xl bg-primary-500/20 border border-primary-400/30 flex items-center justify-center">
+                                            <Icon className="h-6 w-6 text-primary-200" />
+                                        </div>
+                                        <div className="mt-4 text-sm font-semibold text-white">{s.title}</div>
+                                        <div className="mt-1 text-xs text-primary-100/70">{s.subtitle}</div>
                                     </div>
                                 </motion.div>
                             );
@@ -435,20 +438,20 @@ const Services = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.98 }}
                             transition={{ duration: 0.25, ease: "easeOut" }}
-                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-hidden"
+                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-y-auto max-h-[92vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setActivePopup(null);
-                                    setActiveWebAppProjectId(null);
-                                }}
-                                className="absolute top-4 right-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/60"
-                                aria-label="Close"
-                            >
-                                <X className="h-5 w-5 text-white" />
-                            </button>
+                            {/* Sticky close bar */}
+                            <div className="sticky top-0 z-20 flex justify-end px-4 pt-4 pb-2 bg-gray-950/80 backdrop-blur-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => { setActivePopup(null); setActiveWebAppProjectId(null); }}
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 transition-colors focus:outline-none"
+                                    aria-label="Close"
+                                >
+                                    <X className="h-4 w-4 text-white" />
+                                </button>
+                            </div>
 
                             {/* Header */}
                             <div className="p-7 sm:p-9 border-b border-white/10">
@@ -480,7 +483,7 @@ const Services = () => {
                             </div>
 
                             {/* Body */}
-                            <div className="p-6 sm:p-8 max-h-[70vh] overflow-auto">
+                            <div className="p-6 sm:p-8">
                                 {!activeWebAppProjectId && (
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
                                         <button

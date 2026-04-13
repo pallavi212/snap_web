@@ -74,8 +74,8 @@ const TestimonialsPage = () => {
             </section>
 
             <Testimonials
-                title="What Our Students Say"
-                subtitle="Real feedback from students and mentees who have grown under expert guidance."
+                title="What Our Clients Say"
+                subtitle="Real feedback from businesses and partners who have grown with our solutions."
             />
         </motion.div>
     );

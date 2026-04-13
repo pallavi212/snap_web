@@ -1,8 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, Camera, Stethoscope, FileCode2, Zap, Layers, ShieldCheck, X } from 'lucide-react';
-import ServiceCard from '../components/ServiceCard';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
     const clinicImages = useMemo(() => {
@@ -35,6 +38,9 @@ const Home = () => {
 
     const [activeProduct, setActiveProduct] = useState(null);
     const [activeProductImageIdx, setActiveProductImageIdx] = useState(0);
+    const projectsRef = useRef(null);
+    const heroImgRef = useRef(null);
+    const heroSectionRef = useRef(null);
 
     useEffect(() => {
         if (!activeProduct) return;
@@ -44,6 +50,45 @@ const Home = () => {
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [activeProduct]);
+
+    // Hero background zoom on scroll
+    useEffect(() => {
+        if (!heroImgRef.current || !heroSectionRef.current) return;
+        gsap.to(heroImgRef.current, {
+            scale: 1.18,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: heroSectionRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true,
+            },
+        });
+        return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    }, []);
+
+    // Project cards zoom-in on scroll
+    useEffect(() => {
+        const cards = projectsRef.current?.querySelectorAll('.project-card');
+        if (!cards?.length) return;
+        cards.forEach((card) => {
+            gsap.fromTo(card,
+                { scale: 0.82, opacity: 0.4 },
+                {
+                    scale: 1,
+                    opacity: 1,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 90%',
+                        end: 'top 25%',
+                        scrub: 1,
+                    },
+                }
+            );
+        });
+        return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    }, []);
 
     const services = [
         {
@@ -120,7 +165,19 @@ const Home = () => {
             </div>
 
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 z-10">
+            <section ref={heroSectionRef} className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 z-10 overflow-hidden">
+                {/* Hero-scoped zoom background */}
+                <div className="absolute inset-0 overflow-hidden -z-0">
+                    <img
+                        ref={heroImgRef}
+                        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000"
+                        alt=""
+                        aria-hidden="true"
+                        className="w-full h-full object-cover scale-100 origin-center"
+                    />
+                    <div className="absolute inset-0 bg-blue-950/80 mix-blend-multiply" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/80 to-blue-900/40" />
+                </div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center max-w-4xl mx-auto">
                         <motion.div
@@ -178,29 +235,77 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Services Overview */}
-            <section className="py-24 z-10 relative">
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">Purpose-Built Platforms</h2>
-                        <p className="text-lg text-blue-100/80 font-medium drop-shadow">
-                            We don't do generic. Our systems are tailored precisely to the workflows of their respective industries.
-                        </p>
-                    </div>
+            {/* Projects Landscape ScrollTrigger Section */}
+            <section className="py-24 z-10 relative" ref={projectsRef}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">Purpose-Built Platforms</h2>
+                    <p className="text-lg text-blue-100/80 font-medium">We don't do generic. Our systems are tailored precisely to the workflows of their respective industries.</p>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
-                        {services.map((service, idx) => (
-                            <ServiceCard
-                                key={idx}
-                                delay={idx * 0.1}
-                                onClick={() => {
-                                    setActiveProduct(service);
-                                    setActiveProductImageIdx(0);
-                                }}
-                                {...service}
-                            />
-                        ))}
-                    </div>
+                <div className="space-y-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {services.map((service, idx) => (
+                        <div
+                            key={service.id}
+                            className="project-card group relative rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-md shadow-[0_8px_40px_rgba(0,0,0,0.5)] cursor-pointer"
+                            onClick={() => { setActiveProduct(service); setActiveProductImageIdx(0); }}
+                        >
+                            <div className="flex flex-col lg:flex-row min-h-[340px]">
+                                {/* Images strip */}
+                                <div className="relative lg:w-3/5 overflow-hidden">
+                                    {/* Main large image */}
+                                    <div className="h-64 lg:h-full overflow-hidden">
+                                        {service.images[0] && (
+                                            <img
+                                                src={service.images[0]}
+                                                alt={service.title}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            />
+                                        )}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-gray-950/80 hidden lg:block" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 to-transparent lg:hidden" />
+                                    </div>
+                                    {/* Thumbnail row */}
+                                    {service.images.length > 1 && (
+                                        <div className="absolute bottom-3 left-3 flex gap-2">
+                                            {service.images.slice(1, 4).map((img, i) => (
+                                                <div key={i} className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shadow-lg">
+                                                    <img src={img} alt="" className="w-full h-full object-cover" />
+                                                </div>
+                                            ))}
+                                            {service.images.length > 4 && (
+                                                <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 bg-black/50 flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">+{service.images.length - 4}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Info panel */}
+                                <div className="lg:w-2/5 p-8 lg:p-10 flex flex-col justify-center">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-11 h-11 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
+                                            {React.createElement(service.icon, { className: 'w-5 h-5 text-blue-400' })}
+                                        </div>
+                                        <span className="text-xs font-semibold tracking-widest uppercase text-blue-300">Project {idx + 1}</span>
+                                    </div>
+                                    <h3 className="text-2xl lg:text-3xl font-bold text-white mb-3 leading-tight">{service.title}</h3>
+                                    <p className="text-blue-100/70 text-sm leading-relaxed mb-6">{service.description}</p>
+                                    <ul className="space-y-2 mb-6">
+                                        {service.highlights.map((h) => (
+                                            <li key={h} className="flex items-center gap-2 text-sm text-blue-100/80">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0" />
+                                                {h}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <span className="inline-flex items-center text-sm font-semibold text-blue-400 group-hover:text-blue-300 transition-colors">
+                                        View Details <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -332,17 +437,20 @@ const Home = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.98 }}
                             transition={{ duration: 0.25, ease: "easeOut" }}
-                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-y-auto max-h-[90vh]"
+                            className="relative w-full max-w-5xl rounded-3xl border border-white/15 bg-gray-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-y-auto max-h-[92vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <button
-                                type="button"
-                                onClick={() => setActiveProduct(null)}
-                                className="absolute top-4 right-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60"
-                                aria-label="Close"
-                            >
-                                <X className="h-5 w-5 text-white" />
-                            </button>
+                            {/* Sticky close bar */}
+                            <div className="sticky top-0 z-20 flex justify-end px-4 pt-4 pb-2 bg-gray-950/80 backdrop-blur-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveProduct(null)}
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 transition-colors focus:outline-none"
+                                    aria-label="Close"
+                                >
+                                    <X className="h-4 w-4 text-white" />
+                                </button>
+                            </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
                                 <div className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/10">

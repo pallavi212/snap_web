@@ -1,6 +1,80 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { User, Code, Sparkles, Quote, CheckCircle2, Terminal, ArrowRight } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { User, Sparkles, Quote, CheckCircle2, Terminal, ArrowRight, Stethoscope, Building2, Camera, FileCode2 } from 'lucide-react';
+
+const MarqueeTestimonials = ({ testimonials }) => {
+    const [paused, setPaused] = useState(false);
+    const trackRef = useRef(null);
+    const posRef = useRef(0);
+    const rafRef = useRef(null);
+    const speed = 0.6; // px per frame
+
+    useEffect(() => {
+        const track = trackRef.current;
+        if (!track) return;
+
+        const animate = () => {
+            if (!paused) {
+                posRef.current -= speed;
+                const half = track.scrollWidth / 2;
+                if (Math.abs(posRef.current) >= half) posRef.current = 0;
+                track.style.transform = `translateX(${posRef.current}px)`;
+            }
+            rafRef.current = requestAnimationFrame(animate);
+        };
+
+        rafRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(rafRef.current);
+    }, [paused]);
+
+    // Resume on scroll
+    useEffect(() => {
+        const onScroll = () => { if (paused) setPaused(false); };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [paused]);
+
+    const items = [...testimonials, ...testimonials];
+
+    return (
+        <div className="relative overflow-hidden py-10">
+            <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-950 to-transparent z-20 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-gray-950 to-transparent z-20 pointer-events-none" />
+
+            <div ref={trackRef} className="flex gap-6 w-max px-6" style={{ willChange: 'transform' }}>
+                {items.map((t, idx) => (
+                    <div
+                        key={idx}
+                        onClick={() => setPaused(p => !p)}
+                        className="relative flex-shrink-0 w-[220px] md:w-[360px] min-h-[200px] md:min-h-[260px] rounded-2xl border border-white/10 shadow-xl bg-white/5 backdrop-blur-xl p-4 md:p-6 flex flex-col justify-between hover:bg-white/10 transition-colors cursor-pointer select-none"
+                    >
+                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                        <div className="flex items-start relative z-10">
+                            <div className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center border border-white/10">
+                                <Quote className="w-3.5 h-3.5 text-blue-400/50" />
+                            </div>
+                        </div>
+
+                        <div className="relative z-10 my-3 md:my-4">
+                            <p className="text-blue-50/90 text-xs md:text-sm font-medium leading-relaxed italic line-clamp-5">"{t.content}"</p>
+                        </div>
+
+                        <div className="relative z-10 pt-3 border-t border-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-bold text-white">{t.name}</h3>
+                                <span className="text-[9px] text-blue-400 font-bold uppercase tracking-widest">Team Member</span>
+                            </div>
+                            <div className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
+                                <User className="w-3.5 h-3.5 text-blue-400" />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 const Career = () => {
     const employeeTestimonials = [
@@ -40,24 +114,34 @@ const Career = () => {
         "Global Domain Exposure: Gain deep insights across multiple sectors, including healthcare, creative tools, and enterprise systems."
     ];
 
-    const projects = [
+    const products = [
         {
-            name: "Enterprise Resource Planner (ERP)",
+            name: "Clinic Management System",
             tech: "React, Node.js, PostgreSQL",
-            description: "A full-stack web application for managing business processes, inventory, and human resources.",
-            mentor: "Satish Ghuge"
+            description: "Complete solution for managing patient records, appointments, billing, and staff — built for modern clinics.",
+            icon: Stethoscope,
+            color: "blue"
         },
         {
-            name: "Real-time Analytics Dashboard",
-            tech: "Next.js, Tailwind CSS, Socket.io",
-            description: "High-performance dashboard for monitoring live data streams with interactive visualizations.",
-            mentor: "Satish Ghuge"
-        },
-        {
-            name: "Healthcare Management Portal",
+            name: "Lab Management (Pathology)",
             tech: "React, Express, MongoDB",
-            description: "Comprehensive system for patient records, scheduling, and billing specifically for clinics.",
-            mentor: "Satish Ghuge"
+            description: "Robust LIMS for pathology labs to manage samples, generate reports, and track inventory with quality control.",
+            icon: Building2,
+            color: "green"
+        },
+        {
+            name: "Photography Management",
+            tech: "Next.js, Tailwind CSS, Supabase",
+            description: "All-in-one platform for photography studios — bookings, client galleries, invoicing, and package management.",
+            icon: Camera,
+            color: "purple"
+        },
+        {
+            name: "Custom Sticker Design",
+            tech: "React, Canvas API, Node.js",
+            description: "Intuitive drag-and-drop sticker designer with barcode generation, batch printing, and template library.",
+            icon: FileCode2,
+            color: "orange"
         }
     ];
 
@@ -184,127 +268,16 @@ const Career = () => {
                     </div>
                 </section>
 
-                {/* Project Showcase Section */}
-                <section className="space-y-12">
-                    <div className="text-center">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-4">Core Engineering Focus</h2>
-                        <p className="text-blue-200/60 font-medium">Building industry-standard applications with precision and scale</p>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {projects.map((project, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="group bg-gradient-to-b from-white/10 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-blue-400/50 transition-all flex flex-col"
-                            >
-                                <div className="mb-6 flex justify-between items-start">
-                                    <div className="p-3 bg-blue-500/20 rounded-xl text-blue-400">
-                                        <Terminal className="w-6 h-6" />
-                                    </div>
-                                    <span className="text-[10px] font-bold tracking-widest uppercase py-1 px-3 bg-blue-500/20 text-blue-300 rounded-full border border-blue-400/30">
-                                        Production Project
-                                    </span>
-                                </div>
-                                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">{project.name}</h3>
-                                <p className="text-sm text-blue-300/80 mb-4 font-mono">{project.tech}</p>
-                                <p className="text-blue-100/60 text-sm mb-6 flex-grow">{project.description}</p>
-
-                                <div className="pt-6 border-t border-white/5 flex items-center">
-                                    <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mr-3">
-                                        <User className="w-5 h-5 text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-blue-400 uppercase font-bold tracking-wider">Lead Engineer</p>
-                                        <p className="text-white font-semibold text-sm">{project.mentor}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </section>
 
                 {/* Employee Testimonials Section */}
                 <section className="space-y-12 overflow-hidden py-10">
                     <div className="text-center px-4">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-4">What Our <span className="text-blue-400">Team Says</span></h2>
-                        <p className="text-blue-200/60 font-medium">Hear directly from the people who build SnapSofts</p>
+                        <h2 className="text-2xl md:text-3xl font-bold mb-2">What Our <span className="text-blue-400">Team Says</span></h2>
+                        <p className="text-blue-200/60 text-sm">Hear directly from the people who build SnapSofts</p>
                     </div>
 
-                    {/* Infinite Auto-Scrolling Marquee */}
-                    <div className="relative group/marquee overflow-hidden py-10">
-                        {/* Gradient Fades for Smooth Edges */}
-                        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-950 to-transparent z-20 pointer-events-none"></div>
-                        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-gray-950 to-transparent z-20 pointer-events-none"></div>
-
-                        <motion.div
-                            className="flex gap-6 w-max px-6"
-                            animate={{
-                                x: ["0%", "-50%"]
-                            }}
-                            transition={{
-                                x: {
-                                    repeat: Infinity,
-                                    repeatType: "loop",
-                                    duration: 35,
-                                    ease: "linear",
-                                }
-                            }}
-                        >
-                            {/* Double the items for a seamless infinite loop */}
-                            {[...employeeTestimonials, ...employeeTestimonials].map((t, idx) => (
-                                <motion.div
-                                    key={idx}
-                                    className="relative flex-shrink-0 w-[320px] md:w-[450px] min-h-[320px] md:min-h-[380px] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl group/card bg-white/5 backdrop-blur-xl p-8 flex flex-col justify-between hover:bg-white/10 transition-colors"
-                                >
-                                    {/* Decorative background circle */}
-                                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover/card:bg-blue-400/20 transition-colors"></div>
-
-                                    {/* Top row: Featured Tag & Icon */}
-                                    <div className="flex justify-between items-start relative z-10">
-                                        {t.featured ? (
-                                            <span className="bg-blue-500/20 text-blue-300 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-2 rounded-full border border-blue-400/30 flex items-center gap-1.5 backdrop-blur-md">
-                                                <Sparkles className="w-3 h-3" />
-                                                Featured
-                                            </span>
-                                        ) : (
-                                            <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
-                                                <Quote className="w-5 h-5 text-blue-400/50" />
-                                            </div>
-                                        )}
-
-                                        <div className="w-12 h-12 bg-white/5 rounded-full border border-white/10 flex items-center justify-center text-blue-400 group-hover/card:bg-blue-500 group-hover/card:text-white transition-all duration-300">
-                                            <ArrowRight className="w-5 h-5 transform -rotate-45" />
-                                        </div>
-                                    </div>
-
-                                    {/* Middle content: Testimonial */}
-                                    <div className="relative z-10 my-6">
-                                        <p className="text-blue-50/90 text-lg md:text-xl font-medium leading-relaxed italic">
-                                            "{t.content}"
-                                        </p>
-                                    </div>
-
-                                    {/* Bottom row: Name & Role */}
-                                    <div className="relative z-10 pt-6 border-t border-white/5 flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white tracking-tight">{t.name}</h3>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <div className="h-0.5 w-4 bg-blue-400/50 rounded-full"></div>
-                                                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Team Member</span>
-                                            </div>
-                                        </div>
-                                        <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-                                            <User className="w-5 h-5 text-blue-400" />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </div>
+                    <MarqueeTestimonials testimonials={employeeTestimonials} />
                 </section>
 
                 {/* CTA Section */}
